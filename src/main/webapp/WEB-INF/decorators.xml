@@ -1,0 +1,8 @@
+<decorators defaultdir="/view/decorators">
+    <decorator name="frontpage" page="main.jsp">
+          <pattern>/</pattern>
+    </decorator>
+    <decorator name="main" page="dashboard.jsp">
+          <pattern>/*</pattern>
+    </decorator>
+</decorators>

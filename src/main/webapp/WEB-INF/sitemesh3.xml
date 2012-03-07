@@ -1,0 +1,6 @@
+<sitemesh>
+  <mapping path="/*" decorator="/view/decorators/main.jsp"/>
+  <mapping path="/dashboard*" decorator="/view/decorators/dashboard.jsp"/>
+  <mapping path="/campaign*" decorator="/view/decorators/dashboard.jsp"/>
+  <mapping path="/report*" decorator="/view/decorators/dashboard.jsp"/>
+</sitemesh>

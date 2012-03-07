@@ -35,9 +35,16 @@
 			<name>Spring Maven Snapshot Repository</name>
 			<url>http://maven.springframework.org/snapshot/</url>
 		</repository>
-
-
-
+		<repository>
+			<id>eclipse-maven-snapshot</id>
+			<name>Eclipse repo</name>
+			<url>http://download.eclipse.org/rt/eclipselink/maven.repo/</url>
+		</repository>
+		<repository>
+			<id>jboss-maven-snapshot</id>
+			<name>JBoss repo</name>
+			<url>https://repository.jboss.org/nexus/content/groups/public/</url>
+		</repository>
 
 		<repository>
 			<id>apache</id>
@@ -48,6 +55,13 @@
 	<dependencies>
 
 		<!-- Spring dependencies -->
+
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
@@ -201,15 +215,29 @@
 		</dependency>
 
 		<!-- database -->
+
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>1.1.0.BUILD-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>4.1.0.Final</version>
+		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.18</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-ibatis</artifactId>
-			<version>2.0.8</version>
 		</dependency>
 
 		<dependency>

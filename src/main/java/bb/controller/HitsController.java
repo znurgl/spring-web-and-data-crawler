@@ -1,0 +1,62 @@
+package bb.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import bb.domain.Campaign;
+import bb.domain.Data;
+import bb.domain.User;
+import bb.repository.CampaignRepository;
+import bb.repository.DataRepository;
+import bb.repository.KeywordRepository;
+import bb.service.UserService;
+
+@Controller
+@RequestMapping("/hits")
+public class HitsController {
+
+	@Autowired
+	UserService userService;
+
+	@Autowired
+	DataRepository dataRepository;
+
+	@Autowired
+	CampaignRepository campaignRepository;
+
+	@Autowired
+	KeywordRepository keywordRepository;
+
+	private final static Log log = LogFactory.getLog(HitsController.class);
+
+	@RequestMapping(value = "", method = RequestMethod.GET)
+	public String frontPage(Model model) {
+
+		User user = userService.getUserFromSession();
+
+		log.debug(user.getCompany().getId());
+
+		List<Campaign> campaigns = campaignRepository.findAllByCompany(user
+				.getCompany());
+		List<Data> dataList = new ArrayList<Data>();
+		//for (Campaign cam : campaigns.get(0)) {
+
+		List<Data> innerData = dataRepository.allByCampaign(campaigns.get(0));
+		if (innerData != null) {
+			dataList.addAll(innerData);
+		}
+		//}
+		model.addAttribute("dataList", dataList);
+
+		return "/hits/list";
+	}
+
+}
