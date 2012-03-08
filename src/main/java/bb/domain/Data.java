@@ -31,7 +31,7 @@ public class Data implements Serializable {
 	@Id
 	@TableGenerator(name = "TABLE_GEN", table = "SEQUENCE", pkColumnName = "SEQ_NAME", valueColumnName = "SEQ_COUNT", pkColumnValue = "SEQ_GEN", allocationSize = 1, initialValue = 1)
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "TABLE_GEN")
-	private int id;
+	private Long id;
 
 	private String body;
 
@@ -68,11 +68,11 @@ public class Data implements Serializable {
 	public Data() {
 	}
 
-	public int getId() {
+	public Long getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
