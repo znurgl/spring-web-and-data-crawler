@@ -9,11 +9,13 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import bb.crawler.CrawlerJob;
 import bb.domain.Campaign;
 import bb.domain.Company;
 import bb.domain.Dictionary;
@@ -48,6 +50,17 @@ public class TestDataController {
 
 	@Autowired
 	LanguageService languageService;
+
+	@RequestMapping(value = "/testcrawler", method = RequestMethod.GET)
+	public void TestCrawler() {
+		CrawlerJob cj = new CrawlerJob();
+		try {
+			cj.collectData();
+		} catch (JobExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	//@RequestMapping(value = "/testdic", method = RequestMethod.GET)
 	public void LangParse() {

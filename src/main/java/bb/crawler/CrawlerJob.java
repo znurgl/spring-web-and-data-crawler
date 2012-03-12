@@ -52,12 +52,14 @@ public class CrawlerJob {
 
 	private final static Log log = LogFactory.getLog(CrawlerJob.class);
 
-	protected synchronized void collectData() throws JobExecutionException {
+	public synchronized void collectData() throws JobExecutionException {
 		log.debug("crawler inditasa...");
 		List<Keyword> keywords = keywordService.allKeywords();
 
 		for (Keyword k : keywords) {
+			//System.out.println("őűŐŰ");
 			getFacebookResults(k);
+			getTwitterResults(k);
 		}
 	}
 
@@ -69,7 +71,7 @@ public class CrawlerJob {
 		HttpClient httpClient = new DefaultHttpClient();
 
 		params.add(new BasicNameValuePair("q", k.getValue()));
-		params.add(new BasicNameValuePair("limit", "400"));
+		params.add(new BasicNameValuePair("limit", "200"));
 
 		String query = URLEncodedUtils.format(params, "utf-8");
 
@@ -103,51 +105,65 @@ public class CrawlerJob {
 
 				//log.debug(d);
 
-				if (d.message.length() > 2) {
-					boolean resp = dictionaryService.valideText(d.message, 60);
+				boolean validText = false;
+
+				String body = new String(d.message.getBytes("UTF-8"), "UTF-8");
+
+				if (body.length() > 2) {
+					boolean resp = dictionaryService.valideText(body, 30);
 
 					if (resp) {
-						log.debug(d.message);
+						validText = true;
 					} else {
-						log.debug("nem magyar szoveg: " + d.message);
+						log.debug("nem magyar szoveg: " + body);
+
 					}
 
 				} else {
 					log.debug("a body nem eleg hosszu ");
 				}
 
-				/*
+				if (validText) {
+					Data data = dataRepository
+							.findBySourceIdAndKeyword(d.id, k);
+					if (data == null) {
+						data = new Data();
+						try {
+							data.setSourceId(d.id);
 
-				Data data = dataRepository.findBySourceIdAndKeyword(d.id, k);
-				if (data == null) {
-					data = new Data();
-					try {
-						data.setSourceId(d.id);
+							data.setTitle((d.name != null && d.name.length() > 100) ? d.name
+									.substring(0, 100) : d.name);
 
-						data.setTitle((d.name != null && d.name.length() > 100) ? d.name
-								.substring(0, 100) : d.name);
-						data.getKeywords().add(k);
-						data.setCreateDate(Calendar.getInstance().getTime());
-						data.setType("facebook");
-						data.setBody("body"); //
-						// data.setTitle(d.caption);
-						dataRepository.create(data);
-					} catch (Exception e) {
-						log.error("hiba a data letrehozasakor");
-						log.error(d);
+							data.setCreateDate(Calendar.getInstance().getTime());
+							data.setType("facebook");
+							data.setBody(body); //
+							// data.setTitle(d.caption);
+							dataRepository.create(data);
+
+							List<Data> keyData = k.getData();
+							if (keyData == null) {
+								keyData = new ArrayList<Data>();
+							}
+							keyData.add(data);
+							k.setData(keyData);
+							keywordService.update(k);
+
+						} catch (Exception e) {
+							log.error("hiba a data letrehozasakor");
+							e.printStackTrace();
+							//log.error(d);
+						}
+					} else if (!data.getKeywords().contains(k)) {
+						List<Data> keyData = k.getData();
+
+						keyData.add(data);
+						k.setData(keyData);
+						keywordService.update(k);
+
+					} else {
+						log.debug("A data objektum mar letezik: " + data);
 					}
-				} else if (!data.getKeywords().contains(k)) {
-					List<Data> keyData = k.getData();
-
-					keyData.add(data);
-					k.setData(keyData);
-					keywordService.update(k);
-
-				} else {
-					log.debug("A data objektum mar letezik: " + data);
 				}
-				
-				*/
 
 			}
 
@@ -201,50 +217,70 @@ public class CrawlerJob {
 				// ellenorzi sourceid alapjan, hogy szerepel-e az
 				// adatbaziban
 
+				String body = URLDecoder.decode(d.text, "UTF-8");
+
+				boolean validText = false;
+
+				if (body.length() > 2) {
+					boolean resp = dictionaryService.valideText(body, 30);
+
+					if (resp) {
+						validText = true;
+					} else {
+						log.debug("nem magyar szoveg: " + body);
+
+					}
+
+				} else {
+					log.debug("a body nem eleg hosszu ");
+				}
+
 				log.debug(d.id);
 
-				Data data = dataRepository.findBySourceIdAndKeyword(d.id, k);
-				if (data == null) {
-					data = new Data();
-					try {
-						data.setSourceId(d.id);
+				if (validText) {
 
-						data.setType("twitter");
-						log.debug(d.text);
-						log.debug(URLDecoder.decode(d.text, "UTF-8"));
-						data.setBody(URLDecoder.decode(d.text, "UTF-8")); //
-						// data.setTitle(d.caption);
-						data.setCreateDate(Calendar.getInstance().getTime());
-						DateFormat formatter;
-						Date date;
-						formatter = new SimpleDateFormat(
-								"E, dd MMM yyyy HH:mm:ss Z");
-						log.debug(d.created_at);
-						date = formatter.parse(d.created_at);
-						data.setOriginalDate(date);
-						data.setSearchSession(searchSession);
-						dataRepository.create(data);
+					Data data = dataRepository
+							.findBySourceIdAndKeyword(d.id, k);
+					if (data == null) {
+						data = new Data();
+						try {
+							data.setSourceId(d.id);
 
-						List<Data> keyData = k.getData();
-						if (keyData == null) {
-							keyData = new ArrayList<Data>();
+							data.setType("twitter");
+							data.setBody(body); //
+							// data.setTitle(d.caption);
+							data.setCreateDate(Calendar.getInstance().getTime());
+							DateFormat formatter;
+							Date date;
+							formatter = new SimpleDateFormat(
+									"E, dd MMM yyyy HH:mm:ss Z");
+							log.debug(d.created_at);
+							date = formatter.parse(d.created_at);
+							data.setOriginalDate(date);
+							data.setSearchSession(searchSession);
+							dataRepository.create(data);
+
+							List<Data> keyData = k.getData();
+							if (keyData == null) {
+								keyData = new ArrayList<Data>();
+							}
+							keyData.add(data);
+							k.setData(keyData);
+							keywordService.update(k);
+
+						} catch (Exception e) {
+							log.debug("hiba a data letrehozasakor");
+							e.printStackTrace();
 						}
+					} else if (!data.getKeywords().contains(k)) {
+						List<Data> keyData = k.getData();
+
 						keyData.add(data);
 						k.setData(keyData);
 						keywordService.update(k);
-
-					} catch (Exception e) {
-						log.debug("hiba a data letrehozasakor");
-						e.printStackTrace();
+					} else {
+						log.debug("A data objektum mar letezik: " + data);
 					}
-				} else if (!data.getKeywords().contains(k)) {
-					List<Data> keyData = k.getData();
-
-					keyData.add(data);
-					k.setData(keyData);
-					keywordService.update(k);
-				} else {
-					log.debug("A data objektum mar letezik: " + data);
 				}
 
 			}

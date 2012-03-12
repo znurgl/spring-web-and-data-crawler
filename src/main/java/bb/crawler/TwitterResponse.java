@@ -1,10 +1,9 @@
 package bb.crawler;
 
-import java.util.Date;
 import java.util.List;
 
 public class TwitterResponse {
-	
+
 	public String completed_in;
 	public String max_id;
 	public String max_id_str;
@@ -16,14 +15,14 @@ public class TwitterResponse {
 	public String results_per_page;
 	public String since_id;
 	public String since_id_str;
-	
-	public class TwitterResult{
+
+	public class TwitterResult {
 		public String created_at;
 		public String from_user;
 		public String from_user_id;
 		public String from_user_id_str;
 		public String from_user_name;
-		public String geo;
+		public Geo geo;
 		public String id;
 		public String id_str;
 		public String iso_language_code;
@@ -37,11 +36,14 @@ public class TwitterResponse {
 		public String to_user_id_str;
 		public String to_user_name;
 	}
-	
-	public class TwitterMetadata{
+
+	public class Geo {
+		public String[] coordinates;
+		public String type;
+	}
+
+	public class TwitterMetadata {
 		public String resultType;
 	}
-	
-	
 
 }

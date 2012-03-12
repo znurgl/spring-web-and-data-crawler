@@ -1,5 +1,6 @@
 package bb.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +48,11 @@ public class DictionaryService {
 			dictionary = dictionaryRepository.allValue();
 		}
 
-		if (dictionary.contains(word.toLowerCase())) {
-			resp = true;
+		for (String dic : dictionary) {
+			if (dic.length() > 2 && word.startsWith(dic)) {
+				resp = true;
+				break;
+			}
 		}
 
 		return resp;
@@ -60,19 +64,32 @@ public class DictionaryService {
 		int valideWordCount = 0;
 		String[] textArray = text.split(" ");
 
+		//legalabb 3 karakter hosszu legyen a szo es ne http-vel kezdodjon
+		List<String> parsedWord = new ArrayList<String>();
+
 		for (String s : textArray) {
+			if (s.length() >= 3 && !s.startsWith("http") && !s.startsWith("@")) {
+				parsedWord.add(s);
+			}
+		}
+
+		for (String s : parsedWord) {
 			if (valideWord(s)) {
 				valideWordCount++;
 			}
 		}
 
-		double sec = textArray.length / 100;
-		System.out.println(sec);
-		System.out.println(valideWordCount);
-		System.out.println(textArray.length);
+		if (parsedWord.size() > 1) {
 
-		if ((valideWordCount > 0) && valideWordCount / sec >= percent) {
-			resp = true;
+			double sec = parsedWord.size() / 100d;
+			System.out.println(sec);
+			System.out.println(valideWordCount);
+			System.out.println(parsedWord.size());
+			System.out.println(valideWordCount / sec);
+
+			if ((valideWordCount > 0) && valideWordCount / sec >= percent) {
+				resp = true;
+			}
 		}
 
 		return resp;

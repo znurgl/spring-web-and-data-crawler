@@ -13,7 +13,6 @@
 		<spring.version>3.1.0.RELEASE</spring.version>
 		<spring-social.version>1.0.2.RELEASE</spring-social.version>
 		<slf4j.version>1.6.1</slf4j.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring-data-graph.version>2.1.0.BUILD-SNAPSHOT</spring-data-graph.version>
 		<org.slf4j-version>1.6.1</org.slf4j-version>
 		<aspectj.version>1.6.12</aspectj.version>
@@ -374,6 +373,7 @@
 							<targetPath>/</targetPath>
 						</overlay>
 					</overlays>
+					<outputEncoding>UTF-8</outputEncoding>
 				</configuration>
 			</plugin>
 
