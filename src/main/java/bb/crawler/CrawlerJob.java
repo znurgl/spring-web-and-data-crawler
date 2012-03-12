@@ -1,8 +1,12 @@
 package bb.crawler;
 
 import java.net.URI;
+import java.net.URLDecoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -21,8 +25,10 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import bb.crawler.FacebookResponse.FBData;
+import bb.crawler.TwitterResponse.TwitterResult;
 import bb.domain.Data;
 import bb.domain.Keyword;
+import bb.domain.SearchSession;
 import bb.repository.DataRepository;
 import bb.repository.SearchSessionRepository;
 import bb.service.DictionaryService;
@@ -144,6 +150,106 @@ public class CrawlerJob {
 				*/
 
 			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	private void getTwitterResults(Keyword k) {
+
+		log.debug("name: " + k.getValue());
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+
+		HttpClient httpClient = new DefaultHttpClient();
+
+		params.add(new BasicNameValuePair("q", k.getValue()));
+		// params.add(new BasicNameValuePair("limit", "400"));
+
+		String query = URLEncodedUtils.format(params, "utf-8");
+
+		URI url = null;
+		try {
+
+			SearchSession searchSession = new SearchSession();
+
+			searchSession.setStartDate(Calendar.getInstance().getTime());
+
+			url = URIUtils.createURI("http", "search.twitter.com", 0,
+					"search.json", query, null);
+
+			searchSession.setSearchText(url.toString());
+
+			log.debug(url.toString());
+			HttpGet httpGet = new HttpGet(url);
+
+			HttpResponse r = httpClient.execute(httpGet);
+			HttpEntity entity = r.getEntity();
+
+			Gson gson = new Gson();
+			String respRow = EntityUtils.toString(entity);
+			TwitterResponse respList = gson.fromJson(respRow,
+					TwitterResponse.class);
+
+			// System.out.println(respList);
+
+			searchSession.setRawData(respRow);
+			searchSessionRepository.create(searchSession);
+			for (TwitterResult d : respList.results) {
+				// ellenorzi sourceid alapjan, hogy szerepel-e az
+				// adatbaziban
+
+				log.debug(d.id);
+
+				Data data = dataRepository.findBySourceIdAndKeyword(d.id, k);
+				if (data == null) {
+					data = new Data();
+					try {
+						data.setSourceId(d.id);
+
+						data.setType("twitter");
+						log.debug(d.text);
+						log.debug(URLDecoder.decode(d.text, "UTF-8"));
+						data.setBody(URLDecoder.decode(d.text, "UTF-8")); //
+						// data.setTitle(d.caption);
+						data.setCreateDate(Calendar.getInstance().getTime());
+						DateFormat formatter;
+						Date date;
+						formatter = new SimpleDateFormat(
+								"E, dd MMM yyyy HH:mm:ss Z");
+						log.debug(d.created_at);
+						date = formatter.parse(d.created_at);
+						data.setOriginalDate(date);
+						data.setSearchSession(searchSession);
+						dataRepository.create(data);
+
+						List<Data> keyData = k.getData();
+						if (keyData == null) {
+							keyData = new ArrayList<Data>();
+						}
+						keyData.add(data);
+						k.setData(keyData);
+						keywordService.update(k);
+
+					} catch (Exception e) {
+						log.debug("hiba a data letrehozasakor");
+						e.printStackTrace();
+					}
+				} else if (!data.getKeywords().contains(k)) {
+					List<Data> keyData = k.getData();
+
+					keyData.add(data);
+					k.setData(keyData);
+					keywordService.update(k);
+				} else {
+					log.debug("A data objektum mar letezik: " + data);
+				}
+
+			}
+			searchSession.setEndDate(Calendar.getInstance().getTime());
+			searchSessionRepository.update(searchSession);
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
