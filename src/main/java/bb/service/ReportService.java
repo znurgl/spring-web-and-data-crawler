@@ -1,5 +1,6 @@
 package bb.service;
 
+import java.io.OutputStream;
 import java.util.HashMap;
 
 import net.sf.jasperreports.engine.JREmptyDataSource;
@@ -32,6 +33,22 @@ public class ReportService {
 			e.printStackTrace();
 		}
 		return filePath;
+	}
+
+	public void getReportById(String reportXml, Long id,
+			OutputStream outputStream) {
+
+		try {
+			jasperReport = JasperCompileManager.compileReport(reportXml);
+			jasperPrint = JasperFillManager.fillReport(jasperReport,
+					new HashMap(), new JREmptyDataSource());
+
+			JasperExportManager.exportReportToPdfStream(jasperPrint,
+					outputStream);
+		} catch (JRException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }

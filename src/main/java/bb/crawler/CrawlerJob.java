@@ -24,18 +24,22 @@ import bb.crawler.FacebookResponse.FBData;
 import bb.domain.Data;
 import bb.domain.Keyword;
 import bb.repository.DataRepository;
-import bb.repository.KeywordRepository;
 import bb.repository.SearchSessionRepository;
+import bb.service.DictionaryService;
+import bb.service.KeywordService;
 
 import com.google.gson.Gson;
 
 public class CrawlerJob {
 
 	@Autowired
-	KeywordRepository keywordRepository;
+	KeywordService keywordService;
 
 	@Autowired
 	DataRepository dataRepository;
+
+	@Autowired
+	DictionaryService dictionaryService;
 
 	@Autowired
 	SearchSessionRepository searchSessionRepository;
@@ -44,12 +48,11 @@ public class CrawlerJob {
 
 	protected synchronized void collectData() throws JobExecutionException {
 		log.debug("crawler inditasa...");
-		// FacebookCrawler fbc = new FacebookCrawler();
+		List<Keyword> keywords = keywordService.allKeywords();
 
-		Keyword k = new Keyword();
-		k.setValue("tavasz");
-
-		getFacebookResults(k);
+		for (Keyword k : keywords) {
+			getFacebookResults(k);
+		}
 	}
 
 	private void getFacebookResults(Keyword k) {
@@ -81,7 +84,7 @@ public class CrawlerJob {
 			Gson gson = new Gson();
 			String respRow = EntityUtils.toString(entity);
 
-			log.debug(respRow);
+			//log.debug(respRow);
 
 			FacebookResponse respList = gson.fromJson(respRow,
 					FacebookResponse.class);
@@ -92,7 +95,22 @@ public class CrawlerJob {
 				// ellenorzi sourceid alapjan, hogy szerepel-e az
 				// adatbaziban
 
-				log.debug(d);
+				//log.debug(d);
+
+				if (d.message.length() > 2) {
+					boolean resp = dictionaryService.valideText(d.message, 60);
+
+					if (resp) {
+						log.debug(d.message);
+					} else {
+						log.debug("nem magyar szoveg: " + d.message);
+					}
+
+				} else {
+					log.debug("a body nem eleg hosszu ");
+				}
+
+				/*
 
 				Data data = dataRepository.findBySourceIdAndKeyword(d.id, k);
 				if (data == null) {
@@ -109,18 +127,21 @@ public class CrawlerJob {
 						// data.setTitle(d.caption);
 						dataRepository.create(data);
 					} catch (Exception e) {
-						log.debug("hiba a data letrehozasakor");
+						log.error("hiba a data letrehozasakor");
+						log.error(d);
 					}
 				} else if (!data.getKeywords().contains(k)) {
 					List<Data> keyData = k.getData();
 
 					keyData.add(data);
 					k.setData(keyData);
-					keywordRepository.update(k);
+					keywordService.update(k);
 
 				} else {
 					log.debug("A data objektum mar letezik: " + data);
 				}
+				
+				*/
 
 			}
 

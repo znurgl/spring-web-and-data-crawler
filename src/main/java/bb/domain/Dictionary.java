@@ -1,12 +1,17 @@
 package bb.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.TableGenerator;
 
 @Entity
+@NamedQueries({ @NamedQuery(name = "Dictionary.findByValue", query = "select o from Dictionary o where o.value = :value") })
 public class Dictionary {
 
 	@Id
@@ -14,6 +19,7 @@ public class Dictionary {
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "TABLE_GEN")
 	private Long id;
 
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Language language;
 
 	private String value;
@@ -40,6 +46,11 @@ public class Dictionary {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	@Override
+	public String toString() {
+		return "Dictionary [id=" + id + ", value=" + value + "]";
 	}
 
 }
