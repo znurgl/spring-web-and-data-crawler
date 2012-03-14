@@ -85,7 +85,7 @@
 
 	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
 		<property name="jobDetail" ref="crawlerJob" />
-		<property name="cronExpression" value="0 */15 * * * ?" />
+		<property name="cronExpression" value="0 */10 * * * ?" />
 	</bean>
 
 	<bean id="scheduler"
