@@ -18,7 +18,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@NamedQueries({ @NamedQuery(name = "findAllByCompany", query = "select o from Campaign o left join fetch o.keywords where o.company = :company") })
+@NamedQueries({ @NamedQuery(name = "findAllByCompany", query = "select o from Campaign o left join o.keywords where o.company = :company") })
 public class Campaign implements Serializable {
 
 	@Id
@@ -30,7 +30,7 @@ public class Campaign implements Serializable {
 	private Date dateFrom;
 	@ManyToOne
 	private Language language;
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	private Company company;
 
 	@OneToMany
@@ -38,7 +38,7 @@ public class Campaign implements Serializable {
 	private List<Keyword> keywords;
 
 	@OneToMany
-	@JoinColumn(name = "campaign_id")
+	@JoinColumn(name = "excludedurls_id")
 	private List<ExcludedUrl> excludedUrls;
 
 	public long getId() {

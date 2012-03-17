@@ -47,13 +47,23 @@ public class HitsController {
 		List<Campaign> campaigns = campaignRepository.findAllByCompany(user
 				.getCompany());
 		List<Data> dataList = new ArrayList<Data>();
-		//for (Campaign cam : campaigns.get(0)) {
+		// for (Campaign cam : campaigns.get(0)) {
 
-		List<Data> innerData = dataRepository.allByCampaign(campaigns.get(0));
-		if (innerData != null) {
-			dataList.addAll(innerData);
+		for (Campaign c : campaigns) {
+			List<Data> innerData = dataRepository.allByCampaign(c);
+			if (innerData != null) {
+				dataList.addAll(innerData);
+			}
 		}
-		//}
+		
+		for(Data d :dataList){
+			String body = d.getBody();
+			if( body.length()>200 ){
+				body = body.substring(0, 200) + "...";
+			}
+			d.setBody(body);
+		}
+		
 		model.addAttribute("dataList", dataList);
 
 		return "/hits/list";

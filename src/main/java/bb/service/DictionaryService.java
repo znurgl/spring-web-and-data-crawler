@@ -49,7 +49,7 @@ public class DictionaryService {
 		}
 
 		for (String dic : dictionary) {
-			if (dic.length() > 2 && word.startsWith(dic)) {
+			if (dic.length() > 2 && word.equals(dic.toLowerCase())) {
 				resp = true;
 				break;
 			}
@@ -57,9 +57,40 @@ public class DictionaryService {
 
 		return resp;
 	}
+	
+	public String removeNonAZ(String s){
+		s = s.replace(".", "");
+		s = s.replace("...", "");
+		s = s.replace(",", "");
+		s = s.replace(":", "");
+		s = s.replace(";", "");
+		s = s.replace("!", "");
+		s = s.replace("?", "");
+		s = s.replace("?!", "");
+		s = s.replace("!?", "");
+		s = s.replace("{", "");
+		s = s.replace("}", "");
+		s = s.replace("(", "");
+		s = s.replace(")", "");
+		s = s.replace("\"", "");
+		s = s.replace("[", "");
+		s = s.replace("]", "");
+		s = s.replace("ô", "ő");
+		s = s.replace("õ", "ő");
+		s = s.replace("û", "ő");
+		s = s.replace("ô", "ő");
+		s = s.replace("ũ", "ő");
+		s = s.replace("'", "");
+		s = s.replace("”", "");
+		s = s.replace("„", "");
+		s = s.replace("-", "");
+		return s;
+	}
 
 	public boolean valideText(String text, int percent) {
 		boolean resp = false;
+		
+		text = removeNonAZ(text);
 
 		int valideWordCount = 0;
 		String[] textArray = text.split(" ");
@@ -67,14 +98,20 @@ public class DictionaryService {
 		//legalabb 3 karakter hosszu legyen a szo es ne http-vel kezdodjon
 		List<String> parsedWord = new ArrayList<String>();
 
+		int maxCount = 21;
+		
 		for (String s : textArray) {
+			if(maxCount == 0){
+				break;
+			}
 			if (s.length() >= 3 && !s.startsWith("http") && !s.startsWith("@")) {
 				parsedWord.add(s);
+				maxCount--;
 			}
 		}
 
 		for (String s : parsedWord) {
-			if (valideWord(s)) {
+			if (valideWord(s.toLowerCase())) {
 				valideWordCount++;
 			}
 		}

@@ -10,10 +10,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.version>3.1.0.RELEASE</spring.version>
+		<spring.version>3.1.1.RELEASE</spring.version>
 		<spring-social.version>1.0.2.RELEASE</spring-social.version>
 		<slf4j.version>1.6.1</slf4j.version>
-		<spring-data-graph.version>2.1.0.BUILD-SNAPSHOT</spring-data-graph.version>
 		<org.slf4j-version>1.6.1</org.slf4j-version>
 		<aspectj.version>1.6.12</aspectj.version>
 	</properties>
@@ -121,12 +120,12 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
-			<version>${spring.version}</version>
+			<version>3.1.0.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
-			<version>${spring.version}</version>
+			<version>3.1.0.RELEASE</version>
 		</dependency>
 
 		<dependency>

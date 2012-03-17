@@ -1,1 +1,1 @@
-<h3>Kamp·nyok</h3>
+<h3>Kamp√°nyok</h3>

@@ -12,17 +12,21 @@
 <title>Dashboard</title>
 </head>
 <body>
-	Találatok:
-	
-		<c:forEach var="data" items="${dataList}">
-			<p>${data.body} [post_date: ${data.originalDate}]</p>
-			<p>Kulcsszavak: 
-			<c:forEach var="keyword" items="${data.keywords}">
+
+	<c:forEach var="data" items="${dataList}">
+		<div class="data-header">${data.originalDate} > ${data.type} > <a href="${data.url}" target="_blank">${data.url}</a></div>
+		<div class="data-body">
+			${data.body} 
+			
+				Kulcsszavak:
+				<c:forEach var="keyword" items="${data.keywords}">
 				${keyword.value} 
 			</c:forEach>
-			</p>
-		</c:forEach>
-	
+			
+		</div>
+		<div class="data-footer"></div>
+	</c:forEach>
+
 
 </body>
 </html>

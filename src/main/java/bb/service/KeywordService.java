@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import bb.domain.Data;
 import bb.domain.Keyword;
 import bb.repository.KeywordRepository;
 
@@ -15,6 +16,14 @@ public class KeywordService {
 
 	@Autowired
 	KeywordRepository keywordRepository;
+	
+	public boolean isDataInKeywords(Data data, Keyword keyword) {
+		return keywordRepository.isDataInKeywords(data, keyword);
+	}
+	
+	public void addDataToKeyword(Data data, Keyword keyword) {
+		keywordRepository.addDataToKeyword(data, keyword);
+	}
 
 	public List<Keyword> allKeywords() {
 		return keywordRepository.findAll();

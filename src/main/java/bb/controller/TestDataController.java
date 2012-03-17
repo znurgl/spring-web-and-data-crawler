@@ -1,11 +1,9 @@
 package bb.controller;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,83 +60,79 @@ public class TestDataController {
 		}
 	}
 
-	//@RequestMapping(value = "/testdic", method = RequestMethod.GET)
+	@RequestMapping(value = "/testdic", method = RequestMethod.GET)
 	public void LangParse() {
 
 		try {
 			// Open the file that is the first 
 			// command line parameter
-			FileInputStream fstream = new FileInputStream(
-					"/Users/znurgl/Documents/Projects/brandbrother/other/hu_HU.dic");
 
-			BufferedReader br = new BufferedReader(new InputStreamReader(
-					fstream, "UTF-8"));
-			String strLine;
-			//Read File Line By Line
-			int slashLine = 0;
-			int tabLine = 0;
-			int allLine = 0;
+			File dir = new File("/Users/znurgl/Downloads/betolteni2");
 
-			Language lan = languageService.findByLocale("hu_HU");
+			for (File f : dir.listFiles()) {
 
-			List<Dictionary> newWords = new ArrayList<Dictionary>();
+				FileInputStream fstream = new FileInputStream(f);
 
-			BufferedWriter out = new BufferedWriter(
-					new OutputStreamWriter(
-							new FileOutputStream(
-									"/Users/znurgl/Documents/Projects/brandbrother/other/tout.txt"),
-							"UTF-8"));
+				BufferedReader br = new BufferedReader(new InputStreamReader(
+						fstream, "UTF-8"));
+				String strLine;
 
-			while ((strLine = br.readLine()) != null) {
-				allLine++;
-				// Print the content on the console
-				System.out.println(strLine);
+				Language lan = languageService.findByLocale("hu_HU");
 
-				String delimiter = "/";
-				/* given string will be split by the argument delimiter provided. */
-				String[] temp = strLine.split(delimiter);
+				List<Dictionary> newWords = new ArrayList<Dictionary>();
 
-				if (temp.length > 1) {
-					Dictionary dic = new Dictionary();
-					dic.setValue(temp[0]);
-					dic.setLanguage(lan);
-					newWords.add(dic);
-					slashLine++;
-					continue;
+				while ((strLine = br.readLine()) != null) {
+					System.out.println(strLine);
+
+					String delimiter = " ";
+					String[] temp = strLine.split(delimiter);
+
+					for (String s : temp) {
+
+						s = s.replace(".", "");
+						s = s.replace("...", "");
+						s = s.replace(",", "");
+						s = s.replace(":", "");
+						s = s.replace(";", "");
+						s = s.replace("!", "");
+						s = s.replace("?", "");
+						s = s.replace("?!", "");
+						s = s.replace("!?", "");
+						s = s.replace("{", "");
+						s = s.replace("}", "");
+						s = s.replace("(", "");
+						s = s.replace(")", "");
+						s = s.replace("\"", "");
+						s = s.replace("[", "");
+						s = s.replace("]", "");
+						s = s.replace("ô", "ő");
+						s = s.replace("õ", "ő");
+						s = s.replace("û", "ő");
+						s = s.replace("ô", "ő");
+						s = s.replace("ũ", "ő");
+						s = s.replace("'", "");
+						s = s.replace("”", "");
+						s = s.replace("„", "");
+						s = s.replace("-", "");
+
+						if (s.length() > 2) {
+							Dictionary dic = new Dictionary();
+							dic.setValue(s.toLowerCase());
+							dic.setLanguage(lan);
+							newWords.add(dic);
+						}
+					}
+
 				}
 
-				delimiter = "\\t";
-				/* given string will be split by the argument delimiter provided. */
-				temp = strLine.split(delimiter);
-
-				if (temp.length > 1) {
-					Dictionary dic = new Dictionary();
-					dic.setValue(temp[0]);
-					dic.setLanguage(lan);
-					newWords.add(dic);
-					tabLine++;
-					continue;
+				for (Dictionary d : newWords) {
+					//System.out.println(d.getValue());
+					try {
+						dictionaryService.create(d);
+					} catch (Exception e) {
+						System.out.println(e.getMessage());
+					}
 				}
-
-				Dictionary dic = new Dictionary();
-				dic.setValue(strLine);
-				dic.setLanguage(lan);
-				newWords.add(dic);
-
-			}
-			//Close the input stream
-			//in.close();
-			System.out.println(allLine);
-			System.out.println(slashLine);
-			System.out.println(tabLine);
-
-			int id = 1000000;
-
-			for (Dictionary d : newWords) {
-				//System.out.println(d.getValue());
-				//dictionaryService.create(d);
-				out.write("insert into Dictionary values (" + id++ + ", '"
-						+ d.getValue() + "', 1);\n");
 			}
 
 		} catch (Exception e) {//Catch exception if any

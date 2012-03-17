@@ -1,5 +1,6 @@
 package bb.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -22,6 +23,7 @@ public class Dictionary {
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Language language;
 
+	@Column(unique = true, nullable = false)
 	private String value;
 
 	public Long getId() {

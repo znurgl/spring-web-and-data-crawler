@@ -4,12 +4,13 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -39,7 +40,8 @@ public class Data implements Serializable {
 	@Column(name = "create_date")
 	private Date createDate;
 
-	@ManyToMany(mappedBy = "data", fetch = FetchType.EAGER)
+	@ManyToMany()
+    @JoinTable(name="Keyword_Data")
 	private List<Keyword> keywords;
 
 	@Temporal(TemporalType.TIMESTAMP)

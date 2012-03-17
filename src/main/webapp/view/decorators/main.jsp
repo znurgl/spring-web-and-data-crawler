@@ -1,10 +1,10 @@
-<%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator"
-           prefix="decorator" %>
+<%@ page import="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter" %>
+<%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <html>
 <head>
-<title><decorator:title default="Intelligens találatok" /> - BrandBrother</title>
+<title><decorator:title default="Intelligens talÃ¡latok" /> - BrandBrother</title>
 <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 <meta http-equiv="Content-Language" content="hu-hu" />
 <link rel="stylesheet" type="text/css" href="/resources/style.css">
@@ -16,13 +16,13 @@
 			<a href="/"><img id="header-logo" src="/images/logo.png" /></a>
 
 			<div id="header-menu-1">
-				<a href="/dashboard">irányítópult</a>
+				<a href="/dashboard">irÃ¡nyÃ­tÃ³pult</a>
 			</div>
 			<div id="header-menu-2">
-				<a href="/campaigns">kampányok</a>
+				<a href="/campaigns">kampÃ¡nyok</a>
 			</div>
 			<div id="header-menu-3">
-				<a href="/hits">találatok</a>
+				<a href="/hits">talÃ¡latok</a>
 			</div>
 			<div id="header-menu-4">
 				<a href="/reports">riportok</a>

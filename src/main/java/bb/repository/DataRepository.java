@@ -41,13 +41,16 @@ public class DataRepository extends GenericDao<Data, Long> {
 		List<Data> dataList = null;
 
 		try {
-			//dataList = em.createQuery("select o from Data o left join fetch o.keywords k left join fetch k.campaign where k.campaign = :campaign")
-			//			.setParameter("campaign", campaign).getResultList();
-			dataList = em
-					.createNativeQuery(
-							"select * from Data d left join Keyword_data kd on d.id = kd.data_id left join keyword k on kd.keywords_id = k.id left join campaign c on k.campaign = :campaign limit 0,100",
-							Data.class)
-					.setParameter("campaign", campaign.getId()).getResultList();
+			dataList = em.createQuery("select o from Data o left join fetch o.keywords k left join k.campaign where k.campaign = :campaign")
+						.setParameter("campaign", campaign).
+						setFirstResult(0).
+						setMaxResults(20).
+						getResultList();
+			//dataList = em
+			//		.createNativeQuery(
+			//				"select * from Data d left join Keyword_data kd on d.id = kd.data_id left join keyword k on kd.keywords_id = k.id left join campaign c on k.campaign = :campaign limit 0,100",
+			//				Data.class)
+			//		.setParameter("campaign", campaign.getId()).getResultList();
 		} catch (Exception e) {
 			log.debug("A keresett Data nem talalhato: " + campaign);
 			e.printStackTrace();
