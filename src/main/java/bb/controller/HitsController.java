@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import bb.domain.Campaign;
 import bb.domain.Data;
@@ -36,24 +37,24 @@ public class HitsController {
 	KeywordRepository keywordRepository;
 
 	private final static Log log = LogFactory.getLog(HitsController.class);
-
-	@RequestMapping(value = "", method = RequestMethod.GET)
-	public String frontPage(Model model) {
-
-		User user = userService.getUserFromSession();
-
-		log.debug(user.getCompany().getId());
-
-		List<Campaign> campaigns = campaignRepository.findAllByCompany(user
-				.getCompany());
+	
+	@RequestMapping(value = "ajax/dataFilter", method = RequestMethod.POST)
+	public String ajaxDataFilter(Model model, @RequestParam("campaign") Long campaignId) {
+		
+		Campaign campaign = campaignRepository.read(campaignId);
+		
+		model.addAttribute("dataList", getDataByCampaign(campaign));
+		
+		return "/hits/dataList";
+		
+	}
+	
+	private List<Data> getDataByCampaign(Campaign campaign){
+		
 		List<Data> dataList = new ArrayList<Data>();
-		// for (Campaign cam : campaigns.get(0)) {
-
-		for (Campaign c : campaigns) {
-			List<Data> innerData = dataRepository.allByCampaign(c);
-			if (innerData != null) {
-				dataList.addAll(innerData);
-			}
+		List<Data> innerData = dataRepository.allByCampaign(campaign);
+		if (innerData != null) {
+			dataList.addAll(innerData);
 		}
 		
 		for(Data d :dataList){
@@ -64,7 +65,22 @@ public class HitsController {
 			d.setBody(body);
 		}
 		
-		model.addAttribute("dataList", dataList);
+		return dataList;
+		
+	}
+
+	@RequestMapping(value = "", method = RequestMethod.GET)
+	public String frontPage(Model model) {
+
+		User user = userService.getUserFromSession();
+
+		log.debug(user.getCompany().getId());
+
+		List<Campaign> campaigns = campaignRepository.findAllByCompany(user
+				.getCompany());
+		
+		model.addAttribute("dataList", getDataByCampaign(campaigns.get(0)));
+		model.addAttribute("campaigns", campaigns);
 
 		return "/hits/list";
 	}

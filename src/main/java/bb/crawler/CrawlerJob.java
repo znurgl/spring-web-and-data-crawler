@@ -59,7 +59,7 @@ public class CrawlerJob {
 
 	@Autowired
 	SearchSessionRepository searchSessionRepository;
-	
+
 	@Autowired
 	DataService dataService;
 
@@ -70,9 +70,10 @@ public class CrawlerJob {
 		List<Keyword> keywords = keywordService.allKeywords();
 
 		for (Keyword k : keywords) {
-			//getFacebookResults(k);
-			//getTwitterResults(k);
+			getFacebookResults(k);
+			getTwitterResults(k);
 			getBloghuResults(k);
+			getPostrResults(k);
 		}
 	}
 
@@ -112,8 +113,6 @@ public class CrawlerJob {
 	}
 
 	private void getFacebookResults(Keyword k) {
-		
-		
 
 		log.debug("name: " + k.getValue());
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -122,9 +121,9 @@ public class CrawlerJob {
 		params.add(new BasicNameValuePair("limit", "200"));
 
 		String query = URLEncodedUtils.format(params, "utf-8");
-		
+
 		SearchSession searchSession = new SearchSession();
-		searchSession.setStartDate(Calendar.getInstance().getTime());		
+		searchSession.setStartDate(Calendar.getInstance().getTime());
 		searchSession.setSearchText(query);
 		searchSessionRepository.create(searchSession);
 
@@ -137,15 +136,13 @@ public class CrawlerJob {
 			log.debug(url.toString());
 
 			String respRow = getStringFromUrl(url, 3);
-			
+
 			searchSession.setRawData(respRow);
 
 			Gson gson = new Gson();
 
-
 			FacebookResponse respList = gson.fromJson(respRow,
 					FacebookResponse.class);
-
 
 			for (FBData d : respList.data) {
 
@@ -168,23 +165,22 @@ public class CrawlerJob {
 				}
 
 				if (validText) {
-					
+
 					DateFormat formatter;
 					Date originalDate;
-					formatter = new SimpleDateFormat(
-							"yyyy-MM-dd'T'HH:mm:ss");
+					formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 					originalDate = formatter.parse(d.created_time);
-					
+
 					String title = (d.name != null && d.name.length() > 100) ? d.name
 							.substring(0, 100) : d.name;
-					
-					dataService.createData(d.id, body, url.toString(), title, "facebook", searchSession, originalDate, k);
 
-					
+					dataService.createData(d.id, body, url.toString(), title,
+							"facebook", searchSession, originalDate, k);
+
 				}
 
 			}
-			
+
 			searchSession.setEndDate(Calendar.getInstance().getTime());
 			searchSessionRepository.update(searchSession);
 
@@ -252,16 +248,17 @@ public class CrawlerJob {
 				log.debug(d.id);
 
 				if (validText) {
-					
+
 					DateFormat formatter;
 					Date originalDate;
 					formatter = new SimpleDateFormat(
 							"E, dd MMM yyyy HH:mm:ss Z");
 					originalDate = formatter.parse(d.created_at);
-					
-					dataService.createData(d.id, body, url.toString(), d.to_user, "twitter", searchSession, originalDate, k);
 
-					
+					dataService.createData(d.id, body, url.toString(),
+							d.to_user, "twitter", searchSession, originalDate,
+							k);
+
 				}
 
 			}
@@ -303,7 +300,6 @@ public class CrawlerJob {
 
 	}
 
-
 	public void getBloghuResults(Keyword k) {
 		try {
 
@@ -334,16 +330,16 @@ public class CrawlerJob {
 				for (int i = 0; i < links.size(); i++) {
 					String linkHref = links.get(i).attr("href");
 					String linkText = links.get(i).text();
-					
+
 					log.debug(linkHref);
-					
+
 					Document bodyDoc = getDocumentByUrl(linkHref, 3);
-					//log.debug(bodyDoc.html());
-					Element bodyElements = bodyDoc.getElementsByClass("post-content").get(0);
-					
+					// log.debug(bodyDoc.html());
+					Element bodyElements = bodyDoc.getElementsByClass(
+							"post-content").get(0);
+
 					String body = bodyElements.text();
 
-					
 					log.debug(body);
 
 					boolean resp = dictionaryService.valideText(body, 41);
@@ -364,17 +360,118 @@ public class CrawlerJob {
 
 						String sourceId = sb.toString();
 						log.debug("sourceId: " + sourceId);
-						
+
 						DateFormat formatter;
 						Date originalDate;
 						formatter = new SimpleDateFormat("yyyymmdd");
 						String[] cut = linkHref.split("/");
 						originalDate = formatter
 								.parse(cut[3] + cut[4] + cut[5]);
+
+						dataService.createData(sourceId, body, linkHref,
+								linkText, "bloghu", searchSession,
+								originalDate, k);
+
+					}
+
+				}
+				searchSession.setEndDate(Calendar.getInstance().getTime());
+				searchSessionRepository.update(searchSession);
+			}// sessionEnd
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void getPostrResults(Keyword k) {
+		try {
+
+			int page = 1;
+			boolean sessionEnd = false;
+
+			while (!sessionEnd) {
+
+				String url = "http://postr.hu/?keres=" + k.getValue()
+						+ "&oldal=" + page++;
+
+				Document doc = getDocumentByUrl(url, 3);
+
+				Elements links = doc.select(".activityflow .comment_text h3 a");
+				// Elements bodies = doc.select("#talalatbox p");
+
+				if (links.size() == 0) {
+					sessionEnd = true;
+					continue;
+				}
+
+				SearchSession searchSession = new SearchSession();
+				searchSession.setStartDate(Calendar.getInstance().getTime());
+				searchSession.setRawData(doc.html());
+				searchSession.setSearchText(url);
+				searchSessionRepository.create(searchSession);
+
+				for (int i = 0; i < links.size(); i++) {
+					try {
 						
-						dataService.createData(sourceId, body, linkHref, linkText, "bloghu", searchSession, originalDate, k);
+						// ha a link tarlamaz #=t, akkor nem kell, mivel comment
 						
+						String linkHref = links.get(i).attr("href");						
+						if( linkHref.contains("#") ){
+							continue;
+						}
 						
+						String linkText = links.get(i).text();
+
+						log.debug(linkHref);
+
+						Document bodyDoc = getDocumentByUrl(linkHref, 3);
+						// log.debug(bodyDoc.html());
+						Elements bodyElements = bodyDoc.getElementsByClass(
+								"text");
+						
+						if(bodyElements.size()==0){
+							continue;
+						}
+
+						String body = bodyElements.get(0).text();
+
+						log.debug(body);
+
+						boolean resp = dictionaryService.valideText(body, 41);
+
+						if (resp) {
+							MessageDigest md = MessageDigest.getInstance("MD5");
+							md.update(linkHref.getBytes());
+
+							byte byteData[] = md.digest();
+
+							// convert the byte to hex format method 1
+							StringBuffer sb = new StringBuffer();
+							for (int j = 0; j < byteData.length; j++) {
+								sb.append(Integer.toString(
+										(byteData[j] & 0xff) + 0x100, 16)
+										.substring(1));
+							}
+
+							String sourceId = sb.toString();
+							log.debug("sourceId: " + sourceId);
+
+							DateFormat formatter;
+							Date originalDate = null;
+							formatter = new SimpleDateFormat("yyyymmdd");
+							// String[] cut = linkHref.split("/");
+							// originalDate = formatter
+							// .parse(cut[3] + cut[4] + cut[5]);
+
+							dataService.createData(sourceId, body, linkHref,
+									linkText, "postr", searchSession,
+									originalDate, k);
+
+						}
+					} catch (Exception e) {
+						log.error("Hiba a data linkek feldolgozasa soran:");
+						e.printStackTrace();
 					}
 
 				}

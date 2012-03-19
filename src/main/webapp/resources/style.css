@@ -205,6 +205,10 @@ body {
 	padding: 10px;
 }
 
+.data-content{
+	clear: both;
+}
+
 .data-header{
 	background-image: url('/images/talalatok-fejlec.jpg');
 	display: block;
@@ -223,6 +227,7 @@ body {
 	background-image: url('/images/talalatok-bg.jpg');
 	display: block;
 	width: 960px;
+	height: 130px;
 }
 
 .data-body .content{
@@ -234,4 +239,25 @@ body {
 	display: block;
 	width: 960px;
 	height: 22px;
+}
+
+.data-icon{
+	display: block;
+	width: 88px;
+	height: 90px;
+	float: left;
+	margin: 3px;
+}
+
+.bloghu-icon{
+	background-image: url('/images/ikon-nagy-bloghu.jpg');	
+}
+.facebook-icon{
+	background-image: url('/images/ikon-nagy-facebook.jpg');	
+}
+.twitter-icon{
+	background-image: url('/images/ikon-nagy-twitter.jpg');	
+}
+.postr-icon{
+	background-image: url('/images/ikon-nagy-postr.jpg');	
 }

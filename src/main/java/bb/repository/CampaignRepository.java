@@ -41,7 +41,6 @@ public class CampaignRepository/* implements GenericDao<Campaign, Long>*/ {
         t = this.em.merge(t);
         this.em.remove(t);
     }
-
 	
 
 }

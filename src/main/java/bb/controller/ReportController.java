@@ -21,7 +21,7 @@ import bb.service.ReportService;
 import bb.service.UserService;
 
 @Controller
-@RequestMapping("/report")
+@RequestMapping("/reports")
 public class ReportController {
 
 	@Autowired

@@ -10,6 +10,10 @@
 <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 <meta http-equiv="Content-Language" content="hu-hu" />
 <link rel="stylesheet" type="text/css" href="/resources/style.css">
+<link type="text/css" href="/resources/css/smoothness/jquery-ui-1.8.17.custom.css" rel="Stylesheet" />	
+<script type="text/javascript" src="/resources/js/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="/resources/js/jquery-ui-1.8.17.custom.min.js"></script>
+<script type="text/javascript" src="/resources/js/base.js"></script>
 <decorator:head />
 </head>
 <body>

@@ -20,8 +20,8 @@ import bb.service.KeywordService;
 import bb.service.UserService;
 
 @Controller
-@RequestMapping("/campaign")
-public class CaimpaignController {
+@RequestMapping("/campaigns")
+public class CampaignController {
 
 	@Autowired
 	UserService userService;
