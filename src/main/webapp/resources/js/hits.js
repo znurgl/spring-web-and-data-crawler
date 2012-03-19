@@ -1,4 +1,6 @@
-
+$(function() {
+	$("#dialog:ui-dialog").dialog("destroy");
+});
 
 function dataFilter() {
 	$.post('/hits/ajax/dataFilter', $("#filterForm").serialize(),
@@ -7,11 +9,11 @@ function dataFilter() {
 			});
 }
 
-function createReport(){
-	$("#dialog:ui-dialog").dialog("destroy");
+function createReportModal(){
 
 	$("#dialog-modal").dialog({
-		height : 140,
+		height : 240,
+		width: 500,
 		modal : true
 	});
 }

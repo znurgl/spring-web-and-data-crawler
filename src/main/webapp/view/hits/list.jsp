@@ -13,9 +13,11 @@
 <script type="text/javascript" src="/resources/js/hits.js"></script>
 </head>
 <body>
-	<div id="dialog-modal" title="Basic modal dialog">
-		<p>Adding the modal overlay screen makes the dialog look more
-			prominent because it dims out the page content.</p>
+	<div id="dialog-modal" title="Riport készítése" style="display: none;">
+		<p>Riport neve: <input type="text" name="name" id="name" />.pdf</p>
+		<p>A riport mentés után a <a href="/reports">riportok</a> menüpont alatt található meg.</p>
+		<p><input type="checkbox" name="download"/> a riportot le szeretném egyből tölteni.</p>
+		<input type="button" value="riport készítése" onClick="createReport()"/>
 	</div>
 
 	<div id="filter">
@@ -31,7 +33,7 @@
 				<input type="button" value="Szűrés" onClick="dataFilter()" />
 			</div>
 			<div id="createReport">
-				<input type="button" value="Riport készítés" onClick="createReport()" />
+				<input type="button" value="Riport készítés" onClick="createReportModal()" />
 			</div>
 		</form>
 	</div>
