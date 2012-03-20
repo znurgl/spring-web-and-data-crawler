@@ -18,6 +18,7 @@ import bb.domain.User;
 import bb.repository.CampaignRepository;
 import bb.repository.DataRepository;
 import bb.repository.KeywordRepository;
+import bb.service.HitsFilterService;
 import bb.service.UserService;
 
 @Controller
@@ -35,6 +36,9 @@ public class HitsController {
 
 	@Autowired
 	KeywordRepository keywordRepository;
+	
+	@Autowired
+	HitsFilterService hfService;
 
 	private final static Log log = LogFactory.getLog(HitsController.class);
 	
@@ -81,6 +85,8 @@ public class HitsController {
 		
 		model.addAttribute("dataList", getDataByCampaign(campaigns.get(0)));
 		model.addAttribute("campaigns", campaigns);
+		
+		hfService.getFilterFromSession();
 
 		return "/hits/list";
 	}
