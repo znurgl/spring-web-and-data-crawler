@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import bb.repository.UserRepository;
+import bb.service.UserService;
 
 @Controller
 @RequestMapping("/auth")
@@ -17,6 +18,9 @@ public class AuthController {
 	
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	UserService userService;
 
 	private final static Log logger = LogFactory.getLog(AuthController.class);
 
@@ -58,5 +62,11 @@ public class AuthController {
 	public String registerPage() {
 		logger.debug("Received request to show register page");
 		return "/auth/registerpage";
+	}
+	
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	public String logoutPage() {
+		userService.destroySession();
+		return "forward:/";
 	}
 }

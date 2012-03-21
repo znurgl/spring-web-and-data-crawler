@@ -32,6 +32,10 @@ public class Keyword implements Serializable  {
 	@ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},mappedBy = "keywords")
 	private List<Data> data;
 	
+	@ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},mappedBy = "keywords")
+	private List<HitsFilter> hitsFilters;
+	
+	
 	@ManyToOne
 	private Campaign campaign;
 
@@ -92,6 +96,14 @@ public class Keyword implements Serializable  {
 
 	public void setData(List<Data> data) {
 		this.data = data;
+	}
+
+	public List<HitsFilter> getHitsFilters() {
+		return hitsFilters;
+	}
+
+	public void setHitsFilters(List<HitsFilter> hitsFilters) {
+		this.hitsFilters = hitsFilters;
 	}
 	
 }

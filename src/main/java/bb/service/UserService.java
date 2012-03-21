@@ -63,4 +63,8 @@ public class UserService implements BrandbrotherUserDetailsService {
 		userRepository.create(role);
 	}
 
+	public void destroySession() {
+		SecurityContextHolder.clearContext();		
+	}
+
 }

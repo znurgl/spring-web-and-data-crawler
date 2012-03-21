@@ -56,9 +56,9 @@ public class RequestInitializeInterceptor extends HandlerInterceptorAdapter {
 			log.debug("a felhasznalo be van jelentkezve");
 			request.setAttribute("user", user);
 
-			List<Campaign> campaigns = null;// campaignService.findAllByCompany(user.getCompany());
+			//List<Campaign> campaigns = null;// campaignService.findAllByCompany(user.getCompany());
 
-			request.setAttribute("campaigns", campaigns);
+			//request.setAttribute("campaigns", campaigns);
 
 		}
 	}

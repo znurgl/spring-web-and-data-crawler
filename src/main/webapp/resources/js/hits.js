@@ -1,5 +1,6 @@
 $(function() {
 	$("#dialog:ui-dialog").dialog("destroy");
+	dataFilter();
 });
 
 function dataFilter() {

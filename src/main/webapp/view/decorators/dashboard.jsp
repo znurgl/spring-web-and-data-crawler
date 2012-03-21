@@ -33,7 +33,10 @@
 			<div id="header-menu-4">
 				<a href="/reports">riportok</a>
 			</div>
-			<div id="header-nav"></div>
+			<div id="header-nav">
+				<p>${user.login} <a href="/auth/logout">Kilépés [X]</a></p>
+				<p>0 új étesítés</p>
+			</div>
 		</div>
 		<div id="content">
 		<decorator:body />

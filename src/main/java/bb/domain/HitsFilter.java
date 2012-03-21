@@ -1,12 +1,15 @@
 package bb.domain;
 
 import java.io.Serializable;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 @Entity
@@ -18,6 +21,9 @@ public class HitsFilter implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Campaign campaign;
+	
+	@ManyToMany
+	private List<Keyword> keywords;
 	
 	private int hitsPerPage;
 	
@@ -53,6 +59,14 @@ public class HitsFilter implements Serializable {
 
 	public void setCampaign(Campaign campaign) {
 		this.campaign = campaign;
+	}
+
+	public List<Keyword> getKeywords() {
+		return keywords;
+	}
+
+	public void setKeywords(List<Keyword> keywords) {
+		this.keywords = keywords;
 	}
 	
 	

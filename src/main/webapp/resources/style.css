@@ -192,6 +192,11 @@ body {
 	width: 297px;
 	height: 62px;
 	background-image: url('/images/navbg.png');
+	color: FFF;
+}
+
+#header-nav a{
+	color: FFF;
 }
 
 #footer{

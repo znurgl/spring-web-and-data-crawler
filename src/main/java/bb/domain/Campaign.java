@@ -18,7 +18,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@NamedQueries({ @NamedQuery(name = "findAllByCompany", query = "select distinct o from Campaign o left join o.keywords where o.company = :company") })
+@NamedQueries({ @NamedQuery(name = "findAllByCompany", query = "select distinct o from Campaign o left join fetch o.keywords where o.company = :company") })
 public class Campaign implements Serializable {
 
 	@Id

@@ -14,10 +14,18 @@
 </head>
 <body>
 	<div id="dialog-modal" title="Riport készítése" style="display: none;">
-		<p>Riport neve: <input type="text" name="name" id="name" />.pdf</p>
-		<p>A riport mentés után a <a href="/reports">riportok</a> menüpont alatt található meg.</p>
-		<p><input type="checkbox" name="download"/> a riportot le szeretném egyből tölteni.</p>
-		<input type="button" value="riport készítése" onClick="createReport()"/>
+		<p>
+			Riport neve: <input type="text" name="name" id="name" />.pdf
+		</p>
+		<p>
+			A riport mentés után a <a href="/reports">riportok</a> menüpont alatt
+			található meg.
+		</p>
+		<p>
+			<input type="checkbox" name="download" /> a riportot le szeretném
+			egyből tölteni.
+		</p>
+		<input type="button" value="riport készítése" onClick="createReport()" />
 	</div>
 
 	<div id="filter">
@@ -25,38 +33,30 @@
 			<div class="harmad">
 				KAMPÁNYVÁLASZTÁS<br /> <select name="campaign">
 					<c:forEach var="campaign" items="${campaigns}">
-						<option value="${campaign.id}">${campaign.name}</option>
+						<option
+							<c:if test="${active_campaign_id == campaign.id}" > selected="selected"</c:if>
+							value="${campaign.id}">${campaign.name}</option>
 					</c:forEach>
 				</select>
 			</div>
+			<p>
+				Kulcsszavak:
+				<c:forEach var="keyword" items="${filter_keywords}">
+					<input type="checkbox" id="filter_keyword-${keyword.id}"
+						name="filter_keyword-${keyword.id}" /> ${keyword.value}  
+			</c:forEach>
+			</p>
 			<div id="postData">
 				<input type="button" value="Szűrés" onClick="dataFilter()" />
 			</div>
 			<div id="createReport">
-				<input type="button" value="Riport készítés" onClick="createReportModal()" />
+				<input type="button" value="Riport készítés"
+					onClick="createReportModal()" />
 			</div>
 		</form>
 	</div>
 
-	<div id="data-div">
-		<c:forEach var="data" items="${dataList}">
-			<div class="data-content">
-				<div class="data-header">
-					${data.originalDate} > ${data.type} > <a href="${data.url}"
-						target="_blank">${data.url}</a>
-				</div>
-				<div class="data-body">
-					<div class="data-icon ${data.type}-icon"></div>
-					${data.body} Kulcsszavak:
-					<c:forEach var="keyword" items="${data.keywords}">
-				${keyword.value} 
-			</c:forEach>
-
-				</div>
-				<div class="data-footer"></div>
-			</div>
-		</c:forEach>
-	</div>
+	<div id="data-div"></div>
 
 
 </body>
