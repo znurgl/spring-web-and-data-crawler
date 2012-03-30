@@ -19,6 +19,7 @@ import bb.domain.User;
 import bb.repository.CampaignRepository;
 import bb.repository.DataRepository;
 import bb.repository.KeywordRepository;
+import bb.service.DataService;
 import bb.service.HitsFilterService;
 import bb.service.SessionService;
 import bb.service.UserService;
@@ -32,6 +33,9 @@ public class HitsController {
 
 	@Autowired
 	DataRepository dataRepository;
+	
+	@Autowired
+	DataService dataService;
 
 	@Autowired
 	CampaignRepository campaignRepository;
@@ -64,16 +68,16 @@ public class HitsController {
 
 		
 
-		model.addAttribute("dataList", getDataByCampaign(hf.getCampaign()));
+		model.addAttribute("dataList", getDataByCampaignAndFilter(hf.getCampaign(), hf));
 
 		return "/hits/dataList";
 
 	}
-
-	private List<Data> getDataByCampaign(Campaign campaign) {
+	
+	private List<Data> getDataByCampaignAndFilter(Campaign campaign, HitsFilter filter) {
 
 		List<Data> dataList = new ArrayList<Data>();
-		List<Data> innerData = dataRepository.allByCampaign(campaign);
+		List<Data> innerData = dataService.getByFilter(filter);
 		if (innerData != null) {
 			dataList.addAll(innerData);
 		}

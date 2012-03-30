@@ -182,6 +182,12 @@ public class TestDataController {
 		c.setName("Index fooldalrol kulcsszavak keresese");
 		c.setKeywords(keyList);
 		campaignService.create(c);
+		
+		Language lang = new Language();
+		lang.setLocale("hu_HU");
+		lang.setName("hungarian");
+		
+		languageService.create(lang);
 
 	}
 

@@ -25,7 +25,9 @@ import javax.persistence.TemporalType;
  * 
  */
 @Entity
-@NamedQueries({ @NamedQuery(name = "Data.findBySourceId", query = "select u from Data u where u.sourceId = :sourceId") })
+@NamedQueries({
+		@NamedQuery(name = "Data.findBySourceId", query = "select u from Data u where u.sourceId = :sourceId"),
+		@NamedQuery(name = "Data.findBySourceIdAndKeyword", query = "select u from Data u left join u.keywords k where u.sourceId = :sourceId and :keywordId in k") })
 public class Data implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -34,6 +36,7 @@ public class Data implements Serializable {
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "TABLE_GEN")
 	private Long id;
 
+	@Column(name = "body", columnDefinition = "text")
 	private String body;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -41,7 +44,7 @@ public class Data implements Serializable {
 	private Date createDate;
 
 	@ManyToMany()
-    @JoinTable(name="Keyword_Data")
+	@JoinTable(name = "Keyword_Data")
 	private List<Keyword> keywords;
 
 	@Temporal(TemporalType.TIMESTAMP)

@@ -29,9 +29,11 @@ public class DataRepository extends GenericDao<Data, Long> {
 
 		try {
 			data = (Data) em.createNamedQuery("Data.findBySourceIdAndKeyword")
-					.setParameter("sourceId", sourceId).getSingleResult();
+					.setParameter("sourceId", sourceId)
+					.setParameter("keywordId", k.getId()).getSingleResult();
 		} catch (Exception e) {
 			log.debug("A keresett Data nem talalhato: " + sourceId);
+			//e.printStackTrace();
 		}
 		return data;
 	}

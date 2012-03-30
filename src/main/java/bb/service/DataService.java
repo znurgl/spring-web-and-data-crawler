@@ -1,7 +1,5 @@
 package bb.service;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -12,25 +10,26 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import bb.crawler.CrawlerJob;
 import bb.domain.Data;
+import bb.domain.HitsFilter;
 import bb.domain.Keyword;
 import bb.domain.SearchSession;
 import bb.repository.DataRepository;
 
 @Service
 public class DataService {
-	
+
 	private final static Log log = LogFactory.getLog(DataService.class);
 
 	@Autowired
 	DataRepository dataRepository;
-	
+
 	@Autowired
 	KeywordService keywordService;
 
-	public void createData(String sourceId, String body, String url, String title, 
-			String type, SearchSession searchSession, Date originalDate, Keyword k) {
+	public void createData(String sourceId, String body, String url,
+			String title, String type, SearchSession searchSession,
+			Date originalDate, Keyword k) {
 
 		Data data = dataRepository.findBySourceId(sourceId);
 		if (data == null || data.getId() == null) {
@@ -42,7 +41,7 @@ public class DataService {
 				data.setBody(body);
 				data.setUrl(url);
 				data.setTitle(title);
-				data.setCreateDate(Calendar.getInstance().getTime());				
+				data.setCreateDate(Calendar.getInstance().getTime());
 				data.setOriginalDate(originalDate);
 				data.setSearchSession(searchSession);
 
@@ -82,6 +81,28 @@ public class DataService {
 			keywordService.addDataToKeyword(data, k);
 		}
 
+	}
+
+	public List<Data> getByFilter(HitsFilter filter) {
+		List<Data> resp = null;
+		
+		
+
+		return resp;
+	}
+	
+	public boolean isDataWithSourceIdAndKeyword(String sourceId, Keyword keyword){
+		boolean resp = false;
+		
+		Data d = dataRepository.findBySourceIdAndKeyword(sourceId, keyword);
+		
+		if( d != null && d.getId() !=null ){
+			resp = true;
+		}
+		
+		log.debug("resp: " + resp);
+		
+		return false;
 	}
 
 }

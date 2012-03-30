@@ -70,10 +70,10 @@ public class CrawlerJob {
 		List<Keyword> keywords = keywordService.allKeywords();
 
 		for (Keyword k : keywords) {
-			getFacebookResults(k);
-			getTwitterResults(k);
 			getBloghuResults(k);
 			getPostrResults(k);
+			getFacebookResults(k);
+			getTwitterResults(k);			
 		}
 	}
 
@@ -117,7 +117,9 @@ public class CrawlerJob {
 		log.debug("name: " + k.getValue());
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 
-		params.add(new BasicNameValuePair("q", k.getValue()));
+		String keywordValue = k.getValue().replace(" ", "+");
+
+		params.add(new BasicNameValuePair("q", keywordValue));
 		params.add(new BasicNameValuePair("limit", "200"));
 
 		String query = URLEncodedUtils.format(params, "utf-8");
@@ -195,8 +197,10 @@ public class CrawlerJob {
 
 		log.debug("name: " + k.getValue());
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		
+		String keywordValue = k.getValue().replace(" ", "+");
 
-		params.add(new BasicNameValuePair("q", k.getValue()));
+		params.add(new BasicNameValuePair("q", keywordValue));
 
 		String query = URLEncodedUtils.format(params, "utf-8");
 
@@ -307,9 +311,11 @@ public class CrawlerJob {
 			boolean sessionEnd = false;
 
 			while (!sessionEnd) {
+				
+				String keywordValue = k.getValue().replace(" ", "+");
 
 				String url = "http://blog.hu/cimlap/search/?sterm="
-						+ k.getValue() + "&page=" + page++;
+						+ keywordValue + "&page=" + page++;
 
 				Document doc = getDocumentByUrl(url, 3);
 
@@ -333,45 +339,37 @@ public class CrawlerJob {
 
 					log.debug(linkHref);
 
-					Document bodyDoc = getDocumentByUrl(linkHref, 3);
-					// log.debug(bodyDoc.html());
-					Element bodyElements = bodyDoc.getElementsByClass(
-							"post-content").get(0);
+					String sourceId = createMd5(linkHref);
+					log.debug("sourceId: " + sourceId);
 
-					String body = bodyElements.text();
+					// ellenorizni kell az adatbazisban
+					if (!dataService.isDataWithSourceIdAndKeyword(sourceId, k)) {
 
-					log.debug(body);
+						Document bodyDoc = getDocumentByUrl(linkHref, 3);
+						// log.debug(bodyDoc.html());
+						Element bodyElements = bodyDoc.getElementsByClass(
+								"post-content").get(0);
 
-					boolean resp = dictionaryService.valideText(body, 41);
+						String body = bodyElements.text();
 
-					if (resp) {
-						MessageDigest md = MessageDigest.getInstance("MD5");
-						md.update(linkHref.getBytes());
+						log.debug(body);
 
-						byte byteData[] = md.digest();
+						boolean resp = dictionaryService.valideText(body, 41);
+						
+						if (resp) {
 
-						// convert the byte to hex format method 1
-						StringBuffer sb = new StringBuffer();
-						for (int j = 0; j < byteData.length; j++) {
-							sb.append(Integer.toString(
-									(byteData[j] & 0xff) + 0x100, 16)
-									.substring(1));
+							DateFormat formatter;
+							Date originalDate;
+							formatter = new SimpleDateFormat("yyyymmdd");
+							String[] cut = linkHref.split("/");
+							originalDate = formatter.parse(cut[3] + cut[4]
+									+ cut[5]);
+
+							dataService.createData(sourceId, body, linkHref,
+									linkText, "bloghu", searchSession,
+									originalDate, k);
+
 						}
-
-						String sourceId = sb.toString();
-						log.debug("sourceId: " + sourceId);
-
-						DateFormat formatter;
-						Date originalDate;
-						formatter = new SimpleDateFormat("yyyymmdd");
-						String[] cut = linkHref.split("/");
-						originalDate = formatter
-								.parse(cut[3] + cut[4] + cut[5]);
-
-						dataService.createData(sourceId, body, linkHref,
-								linkText, "bloghu", searchSession,
-								originalDate, k);
-
 					}
 
 				}
@@ -384,6 +382,31 @@ public class CrawlerJob {
 
 	}
 
+	private String createMd5(String id) {
+		String resp = null;
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update(id.getBytes());
+
+			byte byteData[] = md.digest();
+
+			// convert the byte to hex format method 1
+			StringBuffer sb = new StringBuffer();
+			for (int j = 0; j < byteData.length; j++) {
+				sb.append(Integer.toString((byteData[j] & 0xff) + 0x100, 16)
+						.substring(1));
+			}
+
+			resp = sb.toString();
+
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+
+		return resp;
+
+	}
+
 	public void getPostrResults(Keyword k) {
 		try {
 
@@ -391,8 +414,10 @@ public class CrawlerJob {
 			boolean sessionEnd = false;
 
 			while (!sessionEnd) {
+				
+				String keywordValue = k.getValue().replace(" ", "+");
 
-				String url = "http://postr.hu/?keres=" + k.getValue()
+				String url = "http://postr.hu/?keres=" + keywordValue
 						+ "&oldal=" + page++;
 
 				Document doc = getDocumentByUrl(url, 3);
@@ -413,61 +438,68 @@ public class CrawlerJob {
 
 				for (int i = 0; i < links.size(); i++) {
 					try {
-						
+
 						// ha a link tarlamaz #=t, akkor nem kell, mivel comment
-						
-						String linkHref = links.get(i).attr("href");						
-						if( linkHref.contains("#") ){
+
+						String linkHref = links.get(i).attr("href");
+						if (linkHref.contains("#")) {
 							continue;
 						}
-						
+
 						String linkText = links.get(i).text();
 
 						log.debug(linkHref);
 
-						Document bodyDoc = getDocumentByUrl(linkHref, 3);
-						// log.debug(bodyDoc.html());
-						Elements bodyElements = bodyDoc.getElementsByClass(
-								"text");
-						
-						if(bodyElements.size()==0){
-							continue;
+						MessageDigest md = MessageDigest.getInstance("MD5");
+						md.update(linkHref.getBytes());
+
+						byte byteData[] = md.digest();
+
+						// convert the byte to hex format method 1
+						StringBuffer sb = new StringBuffer();
+						for (int j = 0; j < byteData.length; j++) {
+							sb.append(Integer.toString(
+									(byteData[j] & 0xff) + 0x100, 16)
+									.substring(1));
 						}
 
-						String body = bodyElements.get(0).text();
+						String sourceId = sb.toString();
+						log.debug("sourceId: " + sourceId);
 
-						log.debug(body);
+						// ellenorizni kell az adatbazisban
+						if (!dataService.isDataWithSourceIdAndKeyword(sourceId,
+								k)) {
 
-						boolean resp = dictionaryService.valideText(body, 41);
+							Document bodyDoc = getDocumentByUrl(linkHref, 3);
+							// log.debug(bodyDoc.html());
+							Elements bodyElements = bodyDoc
+									.getElementsByClass("text");
 
-						if (resp) {
-							MessageDigest md = MessageDigest.getInstance("MD5");
-							md.update(linkHref.getBytes());
-
-							byte byteData[] = md.digest();
-
-							// convert the byte to hex format method 1
-							StringBuffer sb = new StringBuffer();
-							for (int j = 0; j < byteData.length; j++) {
-								sb.append(Integer.toString(
-										(byteData[j] & 0xff) + 0x100, 16)
-										.substring(1));
+							if (bodyElements.size() == 0) {
+								continue;
 							}
 
-							String sourceId = sb.toString();
-							log.debug("sourceId: " + sourceId);
+							String body = bodyElements.get(0).text();
 
-							DateFormat formatter;
-							Date originalDate = null;
-							formatter = new SimpleDateFormat("yyyymmdd");
-							// String[] cut = linkHref.split("/");
-							// originalDate = formatter
-							// .parse(cut[3] + cut[4] + cut[5]);
+							log.debug(body);
 
-							dataService.createData(sourceId, body, linkHref,
-									linkText, "postr", searchSession,
-									originalDate, k);
+							boolean resp = dictionaryService.valideText(body,
+									41);
 
+							if (resp) {
+
+								DateFormat formatter;
+								Date originalDate = null;
+								formatter = new SimpleDateFormat("yyyymmdd");
+								// String[] cut = linkHref.split("/");
+								// originalDate = formatter
+								// .parse(cut[3] + cut[4] + cut[5]);
+
+								dataService.createData(sourceId, body,
+										linkHref, linkText, "postr",
+										searchSession, originalDate, k);
+
+							}
 						}
 					} catch (Exception e) {
 						log.error("Hiba a data linkek feldolgozasa soran:");

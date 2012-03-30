@@ -102,13 +102,10 @@
 		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
-			<!--
+			
 				<ref bean="simpleTrigger" />
-			 	 <ref bean="cronTrigger" />-->
+			 <!--	 <ref bean="cronTrigger" />-->
 			</list>
 		</property>
 	</bean>
-
-
-
 </beans>
