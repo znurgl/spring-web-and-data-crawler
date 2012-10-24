@@ -64,7 +64,7 @@ public class TestDataController {
 	public void LangParse() {
 
 		try {
-			// Open the file that is the first 
+			// Open the file that is the first
 			// command line parameter
 
 			File dir = new File("/Users/znurgl/Downloads/betolteni2");
@@ -126,7 +126,7 @@ public class TestDataController {
 				}
 
 				for (Dictionary d : newWords) {
-					//System.out.println(d.getValue());
+					// System.out.println(d.getValue());
 					try {
 						dictionaryService.create(d);
 					} catch (Exception e) {
@@ -135,7 +135,7 @@ public class TestDataController {
 				}
 			}
 
-		} catch (Exception e) {//Catch exception if any
+		} catch (Exception e) {// Catch exception if any
 			System.err.println("Error: " + e.getMessage());
 		}
 
@@ -182,11 +182,11 @@ public class TestDataController {
 		c.setName("Index fooldalrol kulcsszavak keresese");
 		c.setKeywords(keyList);
 		campaignService.create(c);
-		
+
 		Language lang = new Language();
 		lang.setLocale("hu_HU");
 		lang.setName("hungarian");
-		
+
 		languageService.create(lang);
 
 	}
